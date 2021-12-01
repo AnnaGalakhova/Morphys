@@ -16,11 +16,11 @@ classdef Sharedpaths
     
 %###################################################### PROPERTIES ##########################################################
     properties (Hidden = false)
-        userid              = 'RWS'; % pulled from global variable 'USERNAME'. 
+        userid              = 'AG'; % pulled from global variable 'USERNAME'. 
     end
     
     properties (Hidden = true)
-        listofuserids       = {'AKS','DBH','DRU','GTS','IKS','JDZ','JOR','JSR','MBV','NAG','RBP','RWS','SHT','THK','TKN'};
+        listofuserids       = {'AG','AKS','DBH','DRU','GTS','IKS','JDZ','JOR','JSR','MBV','NAG','RBP','RWS','SHT','THK','TKN'};
         dir_base            = 'D:\';
         dir_ephys           = fullfile('Morphys','Data','Electrophysiology');
         dir_abfs            = fullfile('Morphys','Data','Electrophysiology','Abffiles');
