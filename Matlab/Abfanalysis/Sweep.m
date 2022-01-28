@@ -100,7 +100,7 @@ classdef Sweep < Sharedmethods & Trace
             end
         end
         
-        function obj= addNWBepochs(obj, epochtable)
+        function obj= addNWBepochs(obj, epochtable,fn)
             
             scalefactor=obj.labbooknum.StimScaleFactor;
             scalefactor=unique(scalefactor(~isnan(scalefactor)));
@@ -137,6 +137,13 @@ classdef Sweep < Sharedmethods & Trace
                     epochts=obj.getsampleusingtime(epochtab.strttime,epochtab.endtime);
                     epochtab.data=epochts.Data;
                     epochtab.units=obj.DataInfo.Units;
+                    
+                    %get stim data to read input current for "step" epoch;
+                    %hotfix for EM data
+                    if strcmp(epochtab.idxstr, 'B')
+                        stimdata=h5read(fn, [obj.stimdataloc '/data'], double(epochtab.strttime*1e-3*obj.samplefreq),double(epochtab.duration*1e-3*obj.samplefreq));
+                        epochtab.firstlevel = nanmedian(stimdata);
+                    end
 
                     %add the epoch to the sweep
                     obj=obj.addepoch(epochtab);
@@ -251,9 +258,10 @@ classdef Sweep < Sharedmethods & Trace
             if nargin<2, apsaswell=1; end
             for i=1:numel(obj)
                 prev_steadystate = [];
+                prev_amp = [];
                 for ii=1:obj(i).nrofepochs
-                    if ii>1, prev_steadystate = obj(i).getepoch(ii-1).steadystate; end % collect previous baseline
-                    obj(i).epochs(ii) = obj(i).getepoch(ii).analyseepoch(apsaswell,prev_steadystate);
+                    if ii>1, prev_steadystate = obj(i).getepoch(ii-1).steadystate; prev_amp = obj(i).getepoch(ii-1).amplitude; end % collect previous baseline
+                    obj(i).epochs(ii) = obj(i).getepoch(ii).analyseepoch(apsaswell,prev_steadystate,prev_amp);
                 end
             end
         end
@@ -415,7 +423,7 @@ classdef Sweep < Sharedmethods & Trace
             obj.updatedconfig = 1;
         end
 
-        %% ----------------------------------------- PLOTTING METHODS -------------------------------------------------------
+        %% ----------------------------------------- sTING METHODS -------------------------------------------------------
         function plot(obj,varargin)
             % NOTE when asking a sweep to plot itself, it will always plot its entire timeseries, regardless of wether
             % certain epochs have been removed from list...

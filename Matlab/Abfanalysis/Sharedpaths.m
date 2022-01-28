@@ -16,12 +16,12 @@ classdef Sharedpaths
     
 %###################################################### PROPERTIES ##########################################################
     properties (Hidden = false)
-        userid              = 'RWS'; % pulled from global variable 'USERNAME'. 
+        userid              = 'EJM'; % pulled from global variable 'USERNAME'. 
     end
     
     properties (Hidden = true)
-        listofuserids       = {'AKS','DBH','DRU','GTS','IKS','JDZ','JOR','JSR','MBV','NAG','RBP','RWS','SHT','THK','TKN'};
-        dir_base            = 'D:\';
+        listofuserids       = {'AKS','DBH','DRU','EJM', 'GTS','IKS','JDZ','JOR','JSR','MBV','NAG','RBP','RWS','SHT','THK','TKN'};
+        dir_base            = '/Users/elinemertens/Downloads/Morphys-master';
         dir_ephys           = fullfile('Morphys','Data','Electrophysiology');
         dir_abfs            = fullfile('Morphys','Data','Electrophysiology','Abffiles');
         dir_setupsettings   = fullfile('Morphys','Data','Electrophysiology','SetupSettings');
@@ -42,7 +42,7 @@ classdef Sharedpaths
         function obj = Sharedpaths(username)
                         
             % set user id
-            obj.setglobalusername('RWS')
+            obj.setglobalusername('EJM')
 %             Commented to allow parfor loop to execute
 %             if nargin == 1 && ~isempty(username)
 %                 obj.userid = username;

@@ -213,21 +213,26 @@ classdef Epoch < Sharedmethods & Trace
         end
         
         %% -------------------------------------- ANALYSE EPOCH METHODS -----------------------------------------------------
-        function obj = analyseepoch(obj,apsaswell,prev_steadystate)
+        function obj = analyseepoch(obj,apsaswell,prev_steadystate,prev_amp)
             % analyse epoch
             % Wrapper function that analyses EPOCHs. If apsaswell==1, analyses ACTIONPOTENTIALs as well.
             
             % See also ACTIONPOTENTIAL, GETTAU, GETSAG, GETSTEADYSTATE.
             
             if ~isscalar(obj),error('Object must be scalar'); end
-            if nargin < 2, apsaswell=1; prev_steadystate = []; end
-            if nargin == 2, prev_steadystate = []; end
+            if nargin < 2, apsaswell=1; prev_steadystate = []; prev_amp = []; end
+            if nargin == 2, prev_steadystate = []; prev_amp = []; end
             
             % analyse action potentials
             if apsaswell == 1,
                 obj = obj.analyseaps; 
             end
 
+            % 211116 removed this part due to errors with analyzing abf 
+%             if ~isempty(prev_amp)
+%                 obj.stepdiff = obj.amplitude - prev_amp ;
+%             end
+            
             % analyse passive properties
             if obj.nrofaps == 0 
                 [obj.steadystate, obj.sswin] = obj.getsteadystate;
@@ -342,8 +347,9 @@ classdef Epoch < Sharedmethods & Trace
                 % select data using time
                 fitts = obj.getsampleusingtime(fitstart,fitend);
                 [xdata, ydata] = prepareCurveData( double(fitts.Time-fitts.TimeInfo.Start), double(fitts.Data) );
-
+           
                 % attempt fit Set up fittype and options.
+                try
                 ft = fittype( 'a*exp(b*-x)+c', 'independent', 'x', 'dependent', 'y' );
                 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
                 opts.Display     = 'Off';
@@ -354,7 +360,7 @@ classdef Epoch < Sharedmethods & Trace
                 opts.StartPoint  = [ydata(1) 0 fitts.getsteadystate];
 
                 % Fit model to data.
-                try [fitresult, gof] = fit( xdata, ydata, ft, opts ); f_status = 'Passed';
+                [fitresult, gof] = fit( xdata, ydata, ft, opts ); f_status = 'Passed';
                 catch err;
                 end
                 if strcmp(f_status,'Passed'),
